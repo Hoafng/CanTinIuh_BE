@@ -1,6 +1,7 @@
 const { NotFoundResponse } = require("../core/error.response");
 const User = require("../models/user.model");
 const Role = require("../models/role.model");
+const Wallet = require("../models/wallet.model");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const { generateTokens, verifyRefreshToken } = require("../auth/authUtils");
@@ -95,9 +96,10 @@ class AuthService {
     return newUser;
   }
 
-  static async loginUser({ studentId, password }) {
+  static async loginUser({ email, password }) {
     // check if user exists
-    const user = await findUserByStudentId(studentId);
+    const user = await User.findOne({ email }).lean();
+
     if (!user) {
       throw new NotFoundResponse("User not found");
     }
@@ -133,7 +135,7 @@ class AuthService {
     });
 
     const token = await generateTokens(
-      { userId: user._id, studentId, email: user.email },
+      { userId: user._id, studentId: user.studentId, email: user.email },
       privateKey
     );
 
@@ -163,10 +165,11 @@ class AuthService {
     const { studentId, password, fullName, email, phone, rePassword } =
       req.body;
 
-    // check if user already exists
-    const user = await findUserByStudentId(studentId);
-    if (user) {
-      throw new NotFoundResponse("User already exists");
+    if (studentId) {
+      const user = await User.findOne({ studentId });
+      if (user) {
+        throw new NotFoundResponse("User already exists");
+      }
     }
 
     // check if password and rePassword match
@@ -194,6 +197,15 @@ class AuthService {
       role: role._id,
     });
 
+    // create wallet
+    const wallet = new Wallet({
+      user: newUser._id,
+    });
+
+    await wallet.save();
+
+    newUser.wallet = wallet._id;
+
     await newUser.save();
 
     return newUser;
@@ -209,7 +221,10 @@ class AuthService {
       throw new NotFoundResponse("Invalid token");
     }
 
-    const { userId } = await verifyRefreshToken(refreshToken, keyToken.privateKey);
+    const { userId } = await verifyRefreshToken(
+      refreshToken,
+      keyToken.privateKey
+    );
 
     if (!userId) {
       throw new NotFoundResponse("Invalid token");
