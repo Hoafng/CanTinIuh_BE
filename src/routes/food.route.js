@@ -13,7 +13,7 @@ const { authentification } = require("../auth/authUtils");
 
 /**
  * @swagger
- * /foods:
+ * /api/v1/foods:
  *   get:
  *     summary: Get all food items
  *     tags: [Foods]
@@ -60,10 +60,11 @@ const { authentification } = require("../auth/authUtils");
  *                       type: integer
  */
 router.get("/", asyncHandler(FoodController.getAllFood));
+router.get("/mobile", asyncHandler(FoodController.getAllFoodMobile));
 
 /**
  * @swagger
- * /foods/top-selling:
+ * /api/v1/foods/top-selling:
  *  get:
  *   summary: Get top 10 selling food items
  *  tags: [Foods]
@@ -89,7 +90,7 @@ router.get("/top-selling", asyncHandler(FoodController.getTop10SellingProducts))
 
 /**
  * @swagger
- * /api/statistics:
+ * /api/v1/foods/statistics:
  *   get:
  *     summary: Thống kê số lượng món đã bán trong tháng hiện tại và tháng trước
  *     description: Tính tổng số món đã bán trong tháng hiện tại và tháng trước và so sánh phần trăm thay đổi.
@@ -123,7 +124,7 @@ router.use(authentification);
 
 /**
  * @swagger
- * /foods:
+ * /api/v1/foods:
  *   post:
  *     summary: Create a new food item
  *     tags: [Foods]
@@ -154,7 +155,7 @@ router.post("/", asyncHandler(FoodController.createFood));
 
 /**
  * @swagger
- * /foods/{id}:
+ * /api/v1/foods/{id}:
  *   delete:
  *     summary: Delete a food item by ID
  *     tags: [Foods]
@@ -176,7 +177,7 @@ router.delete("/:id", asyncHandler(FoodController.deleteFood));
 
 /**
  * @swagger
- * /foods/{id}:
+ * /api/v1/foods/{id}:
  *   put:
  *     summary: Update a food item by ID
  *     tags: [Foods]
@@ -203,7 +204,7 @@ router.put("/:id", asyncHandler(FoodController.updateFood));
 
 /**
  * @swagger
- * /foods/sold-out/{id}:
+ * /api/v1/foods/sold-out/{id}:
  *   put:
  *     summary: Mark a food item as sold out
  *     tags: [Foods]
@@ -224,7 +225,7 @@ router.put("/sold-out/:id", asyncHandler(FoodController.soldOutFood));
 
 /**
  * @swagger
- * /foods/available/{id}:
+ * /api/v1/foods/available/{id}:
  *   put:
  *     summary: Mark a food item as available
  *     tags: [Foods]
@@ -245,7 +246,7 @@ router.put("/available/:id", asyncHandler(FoodController.availableFood));
 
 /**
  * @swagger
- * /foods/{id}:
+ * /api/v1/foods/{id}:
  *   get:
  *     summary: Get a food item by ID
  *     tags: [Foods]
